@@ -1,0 +1,16 @@
+{
+  "name": "thiendao-system",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev:core": "pnpm --filter thiendao-core dev",
+    "dev:dao": "pnpm --filter story-dao dev",
+    "dev": "pnpm run --parallel dev:core dev:dao",
+    "build:dao": "pnpm --filter story-dao build",
+    "lint:dao": "pnpm --filter story-dao lint",
+    "db:generate": "pnpm --filter thiendao-core db:generate",
+    "db:migrate": "pnpm --filter thiendao-core db:migrate",
+    "db:studio": "pnpm --filter thiendao-core db:studio"
+  }
+}

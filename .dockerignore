@@ -1,0 +1,25 @@
+# ─── Docker Ignore (Development) ─────────────────────────────────
+# Prevents unnecessary files from entering the Docker build context.
+# ──────────────────────────────────────────────────────────────────
+
+# Dependencies (installed inside the container)
+node_modules
+**/node_modules
+
+# Git
+.git
+.gitignore
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.md
+!pnpm-workspace.yaml

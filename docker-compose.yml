@@ -1,0 +1,94 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🌀 Vạn Khí Trận — Thiên Đạo System (Full Development Stack)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+#   docker compose up --build        ← Start everything
+#   docker compose up --build -d     ← Start in background
+#   docker compose logs -f           ← Follow all logs
+#   docker compose down              ← Stop everything
+#   docker compose down -v           ← Stop + remove volumes (full reset)
+#
+# ─── Adding new packages WITHOUT rebuilding ──────────────────────
+#   1. Run on HOST:    pnpm --filter thiendao-core add <package>
+#   2. Then either:
+#      a) Restart:     docker compose restart api
+#      b) Live:        docker compose exec api pnpm install
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+services:
+
+  # ─── 🐘 PostgreSQL Database ────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: thiendao-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: haothien
+      POSTGRES_PASSWORD: "741953"
+      POSTGRES_DB: thiendao
+    volumes:
+      - thiendao_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U haothien -d thiendao" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── 🔥 Thiên Đạo Core API (Hono + Drizzle) ──────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/thiendao-core/Dockerfile.dev
+    container_name: thiendao-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    working_dir: /app/apps/thiendao-core
+    # ─── Startup: install deps → run dev (no rebuild needed for new pkgs)
+    command: sh -c "cd /app && pnpm install --frozen-lockfile=false && cd /app/apps/thiendao-core && pnpm run dev"
+    volumes:
+      # Bind mount — ENTIRE monorepo for cross-package hot reload
+      - .:/app
+      # Anonymous volumes to preserve Linux-built node_modules
+      # (prevents Windows host binaries from overwriting Alpine binaries)
+      - /app/node_modules
+      - /app/apps/thiendao-core/node_modules
+      - /app/apps/story-dao/node_modules
+      - /app/packages/types/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      DATABASE_URL: postgresql://haothien:741953@db:5432/thiendao
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── 🎮 Story DAO Frontend (React + Vite + TanStack) ──────────
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/story-dao/Dockerfile.dev
+    container_name: story-dao-ui
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    working_dir: /app/apps/story-dao
+    # ─── Startup: install deps → run dev (no rebuild needed for new pkgs)
+    command: sh -c "cd /app && pnpm install --frozen-lockfile=false && cd /app/apps/story-dao && pnpm run dev"
+    volumes:
+      # Bind mount — ENTIRE monorepo for cross-package hot reload
+      - .:/app
+      # Anonymous volumes to preserve Linux-built node_modules
+      - /app/node_modules
+      - /app/apps/thiendao-core/node_modules
+      - /app/apps/story-dao/node_modules
+      - /app/packages/types/node_modules
+    environment:
+      NODE_ENV: development
+
+# ─── Named Volumes ───────────────────────────────────────────────
+volumes:
+  thiendao_pgdata:
