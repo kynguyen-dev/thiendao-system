@@ -30,6 +30,7 @@
 - Use functional components and React Hooks.
 - UI Theme: Always default to Dark Mode (`bg-slate-950`, dark grays). Use "jade green" or "gold" for magical/mystical accents (e.g., cultivation stages, rare items).
 - Avoid inline CSS. Use Tailwind utility classes. Use `cn()` utility for conditional classes (standard shadcn/ui practice).
+- Button Spacing: Avoid fixed heights (like `h-14`). Always use padding where horizontal padding is 2x the vertical padding (e.g., `py-4 px-8` or `py-3 px-6`).
 - Animations should be smooth, focusing on "typewriter" effects for story text and glowing/fading effects for magical items.
 
 ### Backend Rules

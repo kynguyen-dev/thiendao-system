@@ -80,6 +80,45 @@ export const StoryNextResponseSchema = z
   })
   .openapi("StoryNextResponse");
 
+// ─── Story Latest — Response Body ─────────────────────────────────
+
+export const GetStoryLatestResponseSchema = z
+  .object({
+    success: z.boolean().openapi({ example: true }),
+    message: z.string().openapi({ example: "Latest story node retrieved" }),
+    data: z
+      .object({
+        id: z.string(),
+        content: z.string(),
+        choices: z.array(StoryChoiceSchema),
+        statChanges: z.record(z.string(), z.number()).optional(),
+        updatedAttributes: z.record(z.string(), z.number()).optional(),
+      })
+      .nullable()
+      .openapi("StoryNodeDataNullable"),
+  })
+  .openapi("GetStoryLatestResponse");
+
+// ─── Get Story History — Response Body ──────────────────────────
+
+export const GetStoryHistoryResponseSchema = z
+  .object({
+    success: z.boolean().openapi({ example: true }),
+    message: z.string().openapi({ example: "Story history retrieved" }),
+    data: z.array(
+      z.object({
+        id: z.string(),
+        content: z.string(),
+        choices: z.any().optional(),
+        actionTaken: z.string().nullable().optional(),
+        parentNodeId: z.string().nullable().optional(),
+        statChanges: z.record(z.string(), z.number()).nullable().optional(),
+        createdAt: z.string().optional(),
+      })
+    ).openapi("StoryHistoryData"),
+  })
+  .openapi("GetStoryHistoryResponse");
+
 // ─── Health Check — Response ────────────────────────────────────
 
 export const HealthCheckResponseSchema = z

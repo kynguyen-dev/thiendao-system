@@ -2,9 +2,12 @@ import { createRoute } from "@hono/zod-openapi";
 import {
   StoryNextRequestSchema,
   StoryNextResponseSchema,
+  GetStoryLatestResponseSchema,
+  GetStoryHistoryResponseSchema,
   HealthCheckResponseSchema,
   ErrorResponseSchema,
 } from "../schemas/story.schema.js";
+import { z } from "@hono/zod-openapi";
 
 // ─── GET / — Health Check ───────────────────────────────────────
 
@@ -71,6 +74,72 @@ export const storyNextRoute = createRoute({
         },
       },
       description: "Thiên Đạo tạm thời quá tải — đã vượt giới hạn API",
+    },
+  },
+});
+
+// ─── GET /api/story/:characterId/latest ─────────────────────────
+
+export const getStoryLatestRoute = createRoute({
+  method: "get",
+  path: "/api/story/{characterId}/latest",
+  tags: ["📖 Story"],
+  summary: "Get Latest Story Node",
+  description: "Lấy node truyện gần nhất của nhân vật để hiển thị tiếp.",
+  request: {
+    params: z.object({
+      characterId: z.string().openapi({ example: "cuid123", description: "Mã NV" }),
+    }),
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: GetStoryLatestResponseSchema,
+        },
+      },
+      description: "Lấy node thành công",
+    },
+    400: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Lỗi",
+    },
+  },
+});
+
+// ─── GET /api/story/:characterId ────────────────────────────────
+
+export const getStoryRoute = createRoute({
+  method: "get",
+  path: "/api/story/{characterId}",
+  tags: ["📖 Story"],
+  summary: "Get Story History",
+  description: "Lấy toàn bộ lịch sử các node truyện của một nhân vật.",
+  request: {
+    params: z.object({
+      characterId: z.string().openapi({ example: "cuid123", description: "Mã NV" }),
+    }),
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: GetStoryHistoryResponseSchema,
+        },
+      },
+      description: "Lấy lịch sử thành công",
+    },
+    400: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Lỗi",
     },
   },
 });

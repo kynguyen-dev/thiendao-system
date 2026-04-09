@@ -9,7 +9,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "scrape": "tsx src/scripts/scraper-engine/cli.ts",
+    "scrape:help": "tsx src/scripts/scraper-engine/cli.ts --help"
   },
   "dependencies": {
     "@google/genai": "^1.45.0",
@@ -17,13 +19,21 @@
     "@hono/zod-openapi": "^1.2.2",
     "@scalar/hono-api-reference": "^0.10.3",
     "@thiendao/types": "workspace:*",
+    "axios": "^1.14.0",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
+    "google-auth-library": "^10.6.2",
+    "groq-sdk": "^1.1.2",
     "hono": "^4.12.8",
+    "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.8",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "drizzle-kit": "^0.31.9",
     "tsx": "^4.21.0",

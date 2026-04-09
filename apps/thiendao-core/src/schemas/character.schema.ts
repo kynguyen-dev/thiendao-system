@@ -42,6 +42,13 @@ export const CreateCharacterRequestSchema = z
     attributes: CharacterAttributesSchema.optional().openapi({
       description: "Chỉ số nhân vật ban đầu (mặc định: 10 cho mỗi chỉ số)",
     }),
+    worldSettings: z.object({
+      plane: z.string(),
+      cultivationPath: z.string(),
+      realmSystem: z.string(),
+    }).optional().openapi({
+      description: "Thiết lập thế giới (Nhân Giới, Tu Tuyến, Cảnh Giới)",
+    }),
   })
   .openapi("CreateCharacterRequest");
 
@@ -60,3 +67,29 @@ export const CreateCharacterResponseSchema = z
       .openapi("CreatedCharacterData"),
   })
   .openapi("CreateCharacterResponse");
+
+// ─── Get Characters ───────────────────────────
+
+export const GetCharactersResponseSchema = z
+  .object({
+    success: z.boolean().openapi({ example: true }),
+    message: z.string().optional().openapi({ example: "List retrieved" }),
+    data: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      background: z.string().nullable(),
+      attributes: z.any(),
+      worldSettings: z.any().nullable().optional(),
+      createdAt: z.string().openapi({ example: "2023-10-27T10:00:00Z" }),
+    })),
+  })
+  .openapi("GetCharactersResponse");
+
+// ─── Delete Character ───────────────────────────
+
+export const DeleteCharacterResponseSchema = z
+  .object({
+    success: z.boolean().openapi({ example: true }),
+    message: z.string().openapi({ example: "Character and story nodes erased" }),
+  })
+  .openapi("DeleteCharacterResponse");
